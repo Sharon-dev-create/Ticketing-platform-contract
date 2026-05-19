@@ -13,7 +13,8 @@
 
         event EventCreated(uint256 indexed ticketId, string eventName, uint256 price, address indexed owner);
         event TicketPurchased(uint256 indexed ticketId, address indexed buyer, string eventName, uint256 price);
-
+        event FundsWithdrawn(address indexed owner, uint256 amount);
+        
         enum EventStatus { Upcoming, Ongoing, Ended }
 
         mapping(uint256 => Ticket) public tickets;
@@ -60,5 +61,15 @@
 
             emit TicketPurchased(nextTicketId, msg.sender, _eventName, msg.value);
             nextTicketId++;
+        }
+
+        function withdrawFunds() external onlyOwner {
+            uint256 balance = address(this).balance;
+            require(balance > 0, "Nothing to withdraw");
+
+            (bool success,) = owner.call{value: balance}("");
+            require(success, "Withdrawal failed");
+
+            emit FundsWithdrawn(owner, balance);
         }
  }
