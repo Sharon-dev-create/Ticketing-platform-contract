@@ -11,7 +11,7 @@
             uint256 Timestamp;
         }
 
-        event TicketCreated(uint256 indexed ticketId, string eventName, uint256 price, address indexed owner);
+        event EventCreated(uint256 indexed ticketId, string eventName, uint256 price, address indexed owner);
         event TicketPurchased(uint256 indexed ticketId, address indexed buyer, string eventName, uint256 price);
 
         enum EventStatus { Upcoming, Ongoing, Ended }
@@ -24,7 +24,12 @@
             _;
         }
 
-        function createTicket(string memory _eventName, uint256 _price) public onlyOwner(nextTicketId) {
+        modifier ticketExist(uint256 id){
+            require(id < nextTicketId, "ticket does not exist");
+            _;
+        }
+
+        function createEvent(string memory _eventName, uint256 _price) public onlyOwner(nextTicketId) {
             require(_price > 0, "price must be greater than zero");
             tickets[nextTicketId] = Ticket(
                 nextTicketId,
@@ -36,7 +41,7 @@
 
             nextTicketId++;
 
-            emit TicketCreated(nextTicketId - 1, _eventName, _price, msg.sender);
+            emit EventCreated(nextTicketId - 1, _eventName, _price, msg.sender);
         }
 
         function buyTicket(string memory _eventName, uint256 _price) public payable {
