@@ -45,7 +45,7 @@
             tickets[nextTicketId] = Ticket({
                 id: nextTicketId,
                 eventName: _eventName,
-                price: _price,
+                price: msg.value,
                 owner: msg.sender,
                 Timestamp: block.timestamp
             });
