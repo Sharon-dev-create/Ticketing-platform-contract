@@ -6,12 +6,13 @@
         struct Ticket{
             uint256 id;
             string eventName;
-            uint8 price;
+            uint256 price;
             address owner;
             uint256 Timestamp;
         }
 
-        emit TicketCreated(uint256 indexed ticketId, string eventName, uint256 price, address indexed owner);
+        event TicketCreated(uint256 indexed ticketId, string eventName, uint256 price, address indexed owner);
+        event TicketPurchased(uint256 indexed ticketId, address indexed buyer, string eventName, uint256 price);
 
         enum EventStatus { Upcoming, Ongoing, Ended }
 
@@ -35,7 +36,7 @@
 
             nextTicketId++;
 
-            event TicketCreated(nextTicketId - 1, _eventName, _price, msg.sender);
+            emit TicketCreated(nextTicketId - 1, _eventName, _price, msg.sender);
         }
 
         function buyTicket(string memory _eventName, uint256 _price) public payable {
@@ -53,5 +54,13 @@
             require(success, "Payment failed");
                 nextTicketId++;
 
+            emit TicketPurchased(
+            nextTicketId,
+            msg.sender,
+            _eventName,
+            msg.value
+        );
+
+        
         }
  }
