@@ -45,11 +45,12 @@
             emit EventCreated(nextTicketId - 1, _eventName, _price, msg.sender);
         }
 
-        function buyTicket(string memory _eventName, uint256 _price) public payable {
+        function buyTicket(string memory _eventName) public payable {
             require(msg.value > 0, "price must be greater than zero");
-            require(block.timestamp < tickets[nextTicketId].Timestamp, "Event has passed");
+            
+            uint256 currenTicketId = nextTicketId;
 
-            tickets[nextTicketId] = Ticket({
+            tickets[currenTicketId] = Ticket({
                 id: nextTicketId,
                 eventName: _eventName,
                 price: msg.value,
@@ -58,7 +59,6 @@
             });
 
             emit TicketPurchased(nextTicketId, msg.sender, _eventName, msg.value);
-                nextTicketId++;
-        
+            nextTicketId++;
         }
  }
