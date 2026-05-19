@@ -31,6 +31,7 @@
 
         function createEvent(string memory _eventName, uint256 _price) public onlyOwner(nextTicketId) {
             require(_price > 0, "price must be greater than zero");
+            require(bytes(_eventName).length > 0, "Event name cannot be empty");
             tickets[nextTicketId] = Ticket(
                 nextTicketId,
                 _eventName,
@@ -45,8 +46,8 @@
         }
 
         function buyTicket(string memory _eventName, uint256 _price) public payable {
-            require(bytes(_eventName).length > 0, "Event name cannot be empty");
             require(msg.value > 0, "price must be greater than zero");
+            require(block.timestamp < tickets[nextTicketId].Timestamp, "Event has passed");
 
             tickets[nextTicketId] = Ticket({
                 id: nextTicketId,
@@ -55,17 +56,9 @@
                 owner: msg.sender,
                 Timestamp: block.timestamp
             });
-            (bool success, ) = msg.sender.call{value: _price}("");
-            require(success, "Payment failed");
+
+            emit TicketPurchased(nextTicketId, msg.sender, _eventName, msg.value);
                 nextTicketId++;
-
-            emit TicketPurchased(
-            nextTicketId,
-            msg.sender,
-            _eventName,
-            msg.value
-        );
-
         
         }
  }
