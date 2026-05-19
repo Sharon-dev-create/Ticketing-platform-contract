@@ -11,7 +11,7 @@
             uint256 Timestamp;
         }
 
-        emit TicketCreated(uint256 indexed ticketId, string eventName, uint8 price, address indexed owner);
+        emit TicketCreated(uint256 indexed ticketId, string eventName, uint256 price, address indexed owner);
 
         enum EventStatus { Upcoming, Ongoing, Ended }
 
@@ -23,7 +23,7 @@
             _;
         }
 
-        function createTicket(string memory _eventName, uint8 _price) public onlyOwner(nextTicketId) {
+        function createTicket(string memory _eventName, uint256 _price) public onlyOwner(nextTicketId) {
             require(_price > 0, "price must be greater than zero");
             tickets[nextTicketId] = Ticket(
                 nextTicketId,
@@ -38,9 +38,9 @@
             event TicketCreated(nextTicketId - 1, _eventName, _price, msg.sender);
         }
 
-        function buyTicket(string memory _eventName, uint8 _price) public {
-            require(buyer == address(0), "Not a registered buyer");
-            require(_price > 0, "price must be greater than zero");
+        function buyTicket(string memory _eventName, uint256 _price) public payable {
+            require(bytes(_eventName).length > 0, "Event name cannot be empty");
+            require(msg.value > 0, "price must be greater than zero");
 
             tickets[nextTicketId] = Ticket({
                 id: nextTicketId,
@@ -52,6 +52,6 @@
             (bool success, ) = msg.sender.call{value: _price}("");
             require(success, "Payment failed");
                 nextTicketId++;
-                
+
         }
  }
